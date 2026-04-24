@@ -1,6 +1,7 @@
 ﻿using Confluent.Kafka;
+using System.Text.Json;
 
-namespace order_service
+namespace payment_service
 {
     public class KafkaProducer
     {
@@ -21,7 +22,7 @@ namespace order_service
             var message = new Message<string, string>
             {
                 Key = key,
-                Value = System.Text.Json.JsonSerializer.Serialize(value)
+                Value = JsonSerializer.Serialize(value)
             };
 
             await _producer.ProduceAsync(topic, message);

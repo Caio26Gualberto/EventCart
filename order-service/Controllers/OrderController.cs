@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using order_service.Entities;
 using order_service.Events;
 
 namespace order_service.Controllers
@@ -19,10 +20,17 @@ namespace order_service.Controllers
         {
             var orderId = Guid.NewGuid();
 
+            Order order = new Order
+            {
+                Id = orderId,
+                ProductId = Guid.NewGuid(),
+                Quantity = Random.Shared.Next(1, 10)
+            };
+
             var orderEvent = new OrderCreatedEvent(
                 orderId,
-                Guid.NewGuid(),
-                1
+                order.ProductId,
+                order.Quantity
             );
 
             await _producer.ProduceAsync(

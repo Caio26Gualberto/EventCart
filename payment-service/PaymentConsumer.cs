@@ -6,6 +6,12 @@ namespace payment_service
 {
     public class PaymentConsumer : BackgroundService
     {
+        private readonly KafkaProducer _producer;
+        public PaymentConsumer(KafkaProducer producer)
+        {
+            _producer = producer;
+        }
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             var config = new ConsumerConfig
@@ -26,17 +32,17 @@ namespace payment_service
 
                     var orderEvent = JsonSerializer.Deserialize<OrderCreatedEvent>(result.Message.Value);
 
-                    Console.WriteLine($"[Payment] Processing Order: {orderEvent.OrderId}");
+                    Console.WriteLine($"[Payment] Processing Order: {orderEvent!.OrderId}");
 
                     var success = Random.Shared.Next(0, 2) == 1; // Randomly decide if payment is successful
 
                     if (success)
                     {
-                        Console.WriteLine($"[Payment] Payment APPROVED for Order: {orderEvent.OrderId}");
+                        await _producer.ProduceAsync("payment-approved", orderEvent.OrderId.ToString(), new PaymentApprovedEvent(orderEvent.OrderId));
                     }
                     else
                     {
-                        Console.WriteLine($"[Payment] Payment FAILED for Order: {orderEvent.OrderId}");
+                        await _producer.ProduceAsync("payment-failed", orderEvent.OrderId.ToString(), new PaymentFailedEvent(orderEvent.OrderId));
                     }
                 }
                 catch (Exception ex)

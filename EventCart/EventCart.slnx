@@ -1,7 +1,0 @@
-<Solution>
-  <Folder Name="/Services/">
-    <Project Path="../inventory-service/inventory-service.csproj" />
-    <Project Path="../order-service/order-service.csproj" />
-    <Project Path="../payment-service/payment-service.csproj" />
-  </Folder>
-</Solution>

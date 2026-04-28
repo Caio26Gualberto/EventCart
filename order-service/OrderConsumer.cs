@@ -1,4 +1,6 @@
 ﻿using Confluent.Kafka;
+using order_service.Context;
+using order_service.Entities;
 using order_service.Events;
 using System.Text.Json;
 
@@ -6,6 +8,12 @@ namespace order_service
 {
     public class OrderConsumer : BackgroundService
     {
+        private readonly OrderDbContext _context;
+        public OrderConsumer(OrderDbContext context)
+        {
+            _context = context;
+        }
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             var config = new ConsumerConfig
@@ -36,7 +44,13 @@ namespace order_service
                     {
                         var evt = JsonSerializer.Deserialize<PaymentApprovedEvent>(result.Message.Value);
 
-                        //Orders[evt.OrderId] = "PAID";
+                        var order = _context.Orders.FirstOrDefault(o => o.Id == evt.OrderId);
+                        if (order != null)
+                        {
+                            order.Status = OrderStatus.Paid;
+                            _context.Orders.Update(order);
+                            await _context.SaveChangesAsync();
+                        }
 
                         Console.WriteLine($"[Order] Payment APPROVED → Order {evt.OrderId} = PAID");
                     }
@@ -45,7 +59,14 @@ namespace order_service
                     {
                         var evt = JsonSerializer.Deserialize<PaymentFailedEvent>(result.Message.Value);
 
-                        //Orders[evt.OrderId] = "FAILED";
+                        var order = _context.Orders.FirstOrDefault(o => o.Id == evt.OrderId);
+
+                        if (order != null)
+                        {
+                            order.Status = OrderStatus.Failed;
+                            _context.Orders.Update(order);
+                            await _context.SaveChangesAsync();
+                        }
 
                         Console.WriteLine($"[Order] Payment FAILED → Order {evt.OrderId} = FAILED");
                     }

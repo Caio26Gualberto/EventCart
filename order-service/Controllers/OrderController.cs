@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using order_service.Context;
 using order_service.Entities;
 using order_service.Events;
 
@@ -10,10 +11,14 @@ namespace order_service.Controllers
     public class OrderController : ControllerBase
     {
         private readonly KafkaProducer _producer;
-        public OrderController(KafkaProducer producer)
+        private readonly OrderDbContext _context;
+        public OrderController(KafkaProducer producer, OrderDbContext context)
         {
             _producer = producer;
+            _context = context;
         }
+
+        //TODO criar serviço de criação de pedido para persistir no banco de dados e enviar o evento para o Kafka
 
         [HttpPost]
         public async Task<IActionResult> CreateOrder()
@@ -26,6 +31,9 @@ namespace order_service.Controllers
                 ProductId = Guid.NewGuid(),
                 Quantity = Random.Shared.Next(1, 10)
             };
+
+            _context.Orders.Add(order);
+            await _context.SaveChangesAsync();
 
             var orderEvent = new OrderCreatedEvent(
                 orderId,

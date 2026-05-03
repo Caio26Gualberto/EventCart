@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/Services/">
+    <Project Path="catalog-service/catalog-service.csproj" Id="cdbba9c7-c400-4402-9a9b-ba69c6d8cfdb" />
     <Project Path="inventory-service/inventory-service.csproj" />
     <Project Path="order-service/order-service.csproj" />
     <Project Path="payment-service/payment-service.csproj" />

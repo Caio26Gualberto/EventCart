@@ -56,15 +56,6 @@ namespace order_service
                             continue;
                         }
 
-                        var exists = await context.Orders.AnyAsync(p => p.Id == evt.OrderId);
-
-                        if (exists)
-                        {
-                            Console.WriteLine($"[Payment] Already processed: {evt.OrderId}");
-                            consumer.Commit(result);
-                            continue;
-                        }
-
                         var order = context.Orders.FirstOrDefault(o => o.Id == evt.OrderId);
 
                         if (order != null)
@@ -85,15 +76,6 @@ namespace order_service
                         if (evt == null)
                         {
                             Console.WriteLine("[Order] Error: PaymentApprovedEvent is null");
-                            consumer.Commit(result);
-                            continue;
-                        }
-
-                        var exists = await context.Orders.AnyAsync(p => p.Id == evt.OrderId);
-
-                        if (exists)
-                        {
-                            Console.WriteLine($"[Payment] Already processed: {evt.OrderId}");
                             consumer.Commit(result);
                             continue;
                         }

@@ -1,4 +1,4 @@
-﻿namespace payment_service.Events
+namespace payment_service.Events
 {
-    public record PaymentApprovedEvent(Guid OrderId);
+    public record PaymentApprovedEvent(Guid OrderId, Guid ProductId, int Quantity);
 }

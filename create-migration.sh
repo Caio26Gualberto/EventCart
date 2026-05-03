@@ -1,6 +1,6 @@
 #!/bin/bash
 
-services=("order-service" "payment-service" "inventory-service")
+services=("order-service" "payment-service" "inventory-service" "catalog-service")
 
 echo "Select a service:"
 select service in "${services[@]}"

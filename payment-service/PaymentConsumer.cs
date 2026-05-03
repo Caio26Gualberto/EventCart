@@ -75,7 +75,11 @@ namespace payment_service
                     if (success)
                     {
                         payment.Status = PaymentStatus.Approved;
-                        await _producer.ProduceAsync("payment-approved", orderEvent.OrderId.ToString(), new PaymentApprovedEvent(orderEvent.OrderId));
+                        await _producer.ProduceAsync(
+                            "payment-approved",
+                            orderEvent.OrderId.ToString(),
+                            new PaymentApprovedEvent(orderEvent.OrderId, orderEvent.ProductId, orderEvent.Quantity)
+                        );
                     }
                     else
                     {

@@ -1,4 +1,4 @@
-using inventory_service;
+using catalog_service;
 
 var builder = WebApplication.CreateBuilder(args);
 
